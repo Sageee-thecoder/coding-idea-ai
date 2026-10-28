@@ -5,6 +5,8 @@ import IdeaGenerator from './components/IdeaGenerator';
 import IdeaDisplay from './components/IdeaDisplay';
 import ThemeSelector from './components/ThemeSelector';
 import MatchResult from './components/MatchResult';
+import HistoryPanel from './components/HistoryPanel';
+import StatsPanel from './components/StatsPanel';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -61,23 +63,49 @@ function App() {
   const [userIdea, setUserIdea] = useState('');
   const [score, setScore] = useState(0);
   const [bestIdea, setBestIdea] = useState(null);
+  const [username, setUsername] = useState('');
+  const [historyTab, setHistoryTab] = useState('ideas');
+  const [stats, setStats] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     document.body.style.backgroundColor = THEMES[theme].bg;
     document.body.style.color = THEMES[theme].text;
   }, [theme]);
 
+  useEffect(() => {
+    // Load user stats on mount
+    loadStats();
+  }, []);
+
+  const loadStats = async () => {
+    try {
+      const response = await axios.get(`${API_BASE}/stats`, {
+        headers: { 'x-username': username || 'anonymous' }
+      });
+      setStats(response.data);
+      setScore(response.data.stats?.total_score || 0);
+    } catch (err) {
+      console.error('Failed to load stats:', err);
+    }
+  };
+
   const generateIdeas = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${API_BASE}/ideas`, userInput);
+      const response = await axios.post(`${API_BASE}/ideas`, userInput, {
+        headers: { 'x-username': username || 'anonymous' }
+      });
       setIdeas(response.data.ideas);
       setBestIdea(null);
       
       if (response.data.ideas.length === 1) {
         setBestIdea(response.data.ideas[0]);
       }
+      
+      // Reload stats
+      await loadStats();
     } catch (err) {
       setError('Failed to generate ideas. Please check your API key.');
     } finally {
@@ -93,6 +121,8 @@ function App() {
       const response = await axios.post(`${API_BASE}/match`, {
         userIdea,
         category: userInput.type
+      }, {
+        headers: { 'x-username': username || 'anonymous' }
       });
       
       const result = response.data;
@@ -106,6 +136,12 @@ function App() {
       } else {
         setScore(prev => prev + 10);
       }
+      
+      // Clear the input
+      setUserIdea('');
+      
+      // Reload stats
+      await loadStats();
     } catch (err) {
       setError('Failed to check match.');
     } finally {
@@ -125,74 +161,121 @@ function App() {
       <div className="retro-overlay"></div>
       
       <header className="header" style={{ borderColor: currentTheme.border }}>
-        <h1 style={{ color: currentTheme.accent }}>CODE IDEA AI</h1>
-        <div className="score-display" style={{ color: currentTheme.accent }}>
-          Score: {score}
+        <div className="header-content">
+          <h1 style={{ color: currentTheme.accent }}>CODE IDEA AI</h1>
+          <div className="user-section">
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter username..."
+              style={{ 
+                backgroundColor: currentTheme.primary,
+                color: currentTheme.text,
+                borderColor: currentTheme.border,
+                padding: '5px 10px',
+                fontSize: '0.9rem'
+              }}
+            />
+            <div className="score-display" style={{ color: currentTheme.accent }}>
+              Score: {score}
+            </div>
+          </div>
         </div>
       </header>
 
-      <ThemeSelector theme={theme} setTheme={setTheme} themes={THEMES} />
+      <div className="main-layout">
+        <main className="main-content" style={{ borderColor: currentTheme.border }}>
+          <ThemeSelector theme={theme} setTheme={setTheme} themes={THEMES} />
 
-      <main className="main-content" style={{ borderColor: currentTheme.border }}>
-        <IdeaGenerator
-          userInput={userInput}
-          setUserInput={setUserInput}
-          onGenerate={generateIdeas}
-          loading={loading}
-          theme={currentTheme}
-        />
+          <IdeaGenerator
+            userInput={userInput}
+            setUserInput={setUserInput}
+            onGenerate={generateIdeas}
+            loading={loading}
+            theme={currentTheme}
+          />
 
-        {error && <div className="error" style={{ color: '#ff4444' }}>{error}</div>}
+          {error && <div className="error" style={{ color: '#ff4444' }}>{error}</div>}
 
-        {bestIdea && (
-          <div className="best-idea-display" style={{ 
-            borderColor: currentTheme.accent,
-            backgroundColor: currentTheme.primary
-          }}>
-            <h2 style={{ color: currentTheme.accent }}>PERFECT MATCH!</h2>
-            <p style={{ color: currentTheme.text }}><strong>{bestIdea.name}</strong></p>
-            <p style={{ color: currentTheme.text }}>{bestIdea.description}</p>
-            {bestIdea.isPerfect && (
-              <div className="perfect-badge" style={{ 
+          {bestIdea && (
+            <div className="best-idea-display" style={{ 
+              borderColor: currentTheme.accent,
+              backgroundColor: currentTheme.primary
+            }}>
+              <h2 style={{ color: currentTheme.accent }}>PERFECT MATCH!</h2>
+              <p style={{ color: currentTheme.text }}><strong>{bestIdea.name}</strong></p>
+              <p style={{ color: currentTheme.text }}>{bestIdea.description}</p>
+              {bestIdea.isPerfect && (
+                <div className="perfect-badge" style={{ 
+                  backgroundColor: currentTheme.accent,
+                  color: currentTheme.bg
+                }}>
+                  PERFECT IDEA!
+                </div>
+              )}
+            </div>
+          )}
+
+          <IdeaDisplay ideas={ideas} theme={currentTheme} />
+
+          <div className="match-section" style={{ borderColor: currentTheme.border }}>
+            <h3 style={{ color: currentTheme.accent }}>Check Your Idea</h3>
+            <div className="match-input-group">
+              <input
+                type="text"
+                value={userIdea}
+                onChange={(e) => setUserIdea(e.target.value)}
+                placeholder="Enter your coding idea..."
+                style={{ 
+                  backgroundColor: currentTheme.primary,
+                  color: currentTheme.text,
+                  borderColor: currentTheme.border
+                }}
+              />
+              <button onClick={checkMatch} disabled={loading} style={{ 
                 backgroundColor: currentTheme.accent,
                 color: currentTheme.bg
               }}>
-                PERFECT IDEA!
-              </div>
+                {loading ? 'Checking...' : 'Check Match'}
+              </button>
+            </div>
+            
+            {matchResult && (
+              <MatchResult result={matchResult} theme={currentTheme} />
             )}
           </div>
+
+          {stats && (
+            <StatsPanel stats={stats} theme={currentTheme} />
+          )}
+        </main>
+
+        {showHistory && (
+          <HistoryPanel
+            theme={currentTheme}
+            onClose={() => setShowHistory(false)}
+            tab={historyTab}
+            setTab={setHistoryTab}
+            username={username}
+          />
         )}
 
-        <IdeaDisplay ideas={ideas} theme={currentTheme} />
-
-        <div className="match-section" style={{ borderColor: currentTheme.border }}>
-          <h3 style={{ color: currentTheme.accent }}>Check Your Idea</h3>
-          <input
-            type="text"
-            value={userIdea}
-            onChange={(e) => setUserIdea(e.target.value)}
-            placeholder="Enter your coding idea..."
-            style={{ 
-              backgroundColor: currentTheme.primary,
-              color: currentTheme.text,
-              borderColor: currentTheme.border
-            }}
-          />
-          <button onClick={checkMatch} disabled={loading} style={{ 
+        <button
+          onClick={() => setShowHistory(true)}
+          className="history-toggle"
+          style={{ 
             backgroundColor: currentTheme.accent,
-            color: currentTheme.bg
-          }}>
-            {loading ? 'Checking...' : 'Check Match'}
-          </button>
-          
-          {matchResult && (
-            <MatchResult result={matchResult} theme={currentTheme} />
-          )}
-        </div>
-      </main>
+            color: currentTheme.bg,
+            borderColor: currentTheme.border
+          }}
+        >
+          {showHistory ? 'Hide History' : 'Show History'}
+        </button>
+      </div>
 
       <footer className="footer" style={{ borderColor: currentTheme.border }}>
-        <p>Powered by Groq AI</p>
+        <p>Powered by Groq AI | Track your coding journey</p>
       </footer>
     </div>
   );
