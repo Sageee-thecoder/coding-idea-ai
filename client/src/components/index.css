@@ -1,0 +1,200 @@
+.idea-generator {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 2px solid;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.idea-generator h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.idea-generator form {
+  display: flex;
+  flexDirection: column;
+  gap: 15px;
+}
+
+.input-group {
+  display: flex;
+  flexDirection: column;
+  gap: 5px;
+}
+
+.input-group label {
+  fontFamily: 'Orbitron, sans-serif';
+  fontSize: '0.9rem';
+}
+
+.input-group select,
+.input-group textarea,
+.input-group input {
+  padding: 10px;
+  border: 2px solid;
+  borderRadius: 5px;
+  fontFamily: 'Orbitron, sans-serif';
+  fontSize: '1rem';
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-group select:focus,
+.input-group textarea:focus,
+.input-group input:focus {
+  border-color: currentColor;
+  box-shadow: 0 0 10px currentColor;
+}
+
+.idea-generator button {
+  padding: 15px 20px;
+  border: none;
+  borderRadius: 5px;
+  fontSize: '1rem';
+  cursor: pointer;
+  transition: all 0.3s ease;
+  textTransform: uppercase;
+  letterSpacing: 2px;
+}
+
+.idea-generator button:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.idea-generator button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.idea-display {
+  margin: 20px 0;
+  padding: 20px;
+  border: 2px solid;
+  borderRadius: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.idea-display h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  fontSize: '1.2rem';
+}
+
+.ideas-grid {
+  display: grid;
+  gridTemplateColumns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.idea-card {
+  padding: 15px;
+  border: 2px solid;
+  borderRadius: 8px;
+  transition: all 0.3s ease;
+}
+
+.idea-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.idea-header {
+  display: flex;
+  justifyContent: space-between;
+  alignItems: center;
+  marginBottom: 10px;
+}
+
+.idea-number {
+  fontFamily: 'Press Start 2P, cursive';
+  fontSize: '0.8rem';
+}
+
+.idea-difficulty {
+  padding: 3px 8px;
+  borderRadius: 3px;
+  fontSize: '0.7rem';
+  fontFamily: 'Press Start 2P, cursive';
+}
+
+.idea-category,
+.idea-genre {
+  margin-top: 10px;
+  fontSize: '0.8rem';
+  fontStyle: italic;
+}
+
+.theme-selector {
+  display: flex;
+  flexDirection: column;
+  alignItems: center;
+}
+
+.theme-options {
+  display: flex;
+  gap: 10px;
+  flexWrap: wrap;
+  justifyContent: center;
+}
+
+.theme-options button {
+  padding: 8px 15px;
+  border: 2px solid;
+  borderRadius: 5px;
+  fontFamily: 'Press Start 2P, cursive';
+  fontSize: '0.7rem';
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-options button:hover {
+  transform: scale(1.1);
+}
+
+.match-section {
+  margin-top: 20px;
+  padding: 20px;
+  border: 2px solid;
+  borderRadius: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.match-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  fontSize: '1.2rem';
+}
+
+.match-section input {
+  width: 100%;
+  padding: 10px;
+  marginBottom: 10px;
+  border: 2px solid;
+  borderRadius: 5px;
+  fontFamily: 'Orbitron, sans-serif';
+  fontSize: '1rem';
+  outline: none;
+}
+
+.match-section button {
+  padding: 10px 20px;
+  border: none;
+  borderRadius: 5px;
+  fontFamily: 'Press Start 2P, cursive';
+  fontSize: '0.8rem';
+  cursor: pointer;
+  transition: all 0.3s ease;
+  textTransform: uppercase;
+}
+
+.match-section button:hover {
+  opacity: 0.9;
+}
+
+.match-section button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

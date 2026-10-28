@@ -1,0 +1,50 @@
+body {
+  margin: 0;
+  font-family: 'Orbitron', sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@keyframes scanline {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 4px; }
+}
+
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 20px #ff0000;
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+  }
+}
+
+.retro-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0.1) 50%,
+    rgba(0, 0, 0, 0.25) 50%
+  );
+  background-size: 100% 2px;
+  animation: scanline 10s linear infinite;
+}
+
+.neon-border {
+  border: 2px solid #ff00aa;
+  box-shadow: 0 0 10px #ff00aa, inset 0 0 10px #ff00aa;
+}
+
+.crt-filter {
+  filter: contrast(1.2) brightness(0.9);
+}
